@@ -1,7 +1,7 @@
 library('FactoMineR')
 
 load('ws.rdata')
-
+data.alcohol[,14] <- factor(data.alcohol[,14])
 N <- nrow(data.alcohol)
 
 learn <- sample(1:N, round(0.67*N))
