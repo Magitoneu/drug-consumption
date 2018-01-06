@@ -4,18 +4,16 @@ library('FactoMineR')
 load('ws.rdata')
 
 args = commandArgs(TRUE)
-if (args[1] %in% NA) {
+if (NA %in% args[1] | NA %in% args[2]) {
     stop("NA")
 }
 drug = args[1]
+min_cl = grep(args[2], levels(data.factor$drug))
 
-index_drug = grep(drug, colnames(data.binclass))
-drug = args[1]
-cols = c(2:13, index_drug)
-
-df = data.binclass[, cols]
+df = data.factor[, c(2:13, grep(drug, colnames(data.factor)))]
+df[, drug][as.numeric(df[, drug]) < min_cl] = "CL0"
+df[, drug][df[, drug] != "CL0"] = "CL1"
 df[, drug] = factor(df[, drug])
-
 
 N <- nrow(df)
 
