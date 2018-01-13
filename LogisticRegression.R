@@ -8,7 +8,7 @@ if (NA %in% args[1] | NA %in% args[2]) {
     stop("NA")
 }
 drug = args[1]
-min_cl = grep(args[2], levels(data.factor$drug))
+min_cl = grep(args[2], levels(data.factor[,drug]))
 
 df = data.factor[, c(2:13, grep(drug, colnames(data.factor)))]
 df[, drug][as.numeric(df[, drug]) < min_cl] = "CL0"
@@ -38,7 +38,7 @@ gl1t <- predict(dataM1.AIC, newdata=df[-learn,],type="response")
 gl1predt <- NULL
 gl1predt[gl1t<P] <- 0
 gl1predt[gl1t>=P] <- 1
-gl1predt <- factor(gl1predt, labels=c("CL0","CL1"), levels=(0, 1))
+gl1predt <- factor(gl1predt, labels=c("CL0","CL1"), levels=c(0, 1))
 
 print(M1.TEtable <- table(Truth=df[-learn, drug],Pred=gl1predt))
 print(100*(1-sum(diag(M1.TEtable))/ntest)) 
