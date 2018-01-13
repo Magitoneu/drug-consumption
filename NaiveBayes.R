@@ -18,8 +18,6 @@ df = data.factor[, c(2:13, grep(drug, colnames(data.factor)))]
 N = nrow(df)
 
 learn = sample(1:N, round(2/3*N))
-nlearn = length(learn)
-ntest = N - nlearn
 
 
 model = naiveBayes(as.formula(paste(drug, " ~ .")), data = df[learn,])
