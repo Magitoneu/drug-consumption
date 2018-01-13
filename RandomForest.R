@@ -7,17 +7,17 @@ source("common.R")
 load("ws.rdata")
 
 
-args = commandArgs(TRUE)
-if (NA %in% args[1]) {
-    stop("NA")
-}
-drug = args[1]
-
+# args = commandArgs(TRUE)
+# if (NA %in% args[1]) {
+#     stop("NA")
+# }
+# drug = args[1]
+drug = 'Cannabis'
 df = data.factor[, c(2:13, grep(drug, colnames(data.factor)))]
 
 N = nrow(df)
 
-learn = sample(1:N, round(2/3*N))
+learn = sample(1:N, round(0.9*N))
 
 #(ntrees = round(10^seq(1,3,by=0.2)))
 #rf.results = matrix (rep(0,2*length(ntrees)),nrow=length(ntrees))
@@ -49,3 +49,6 @@ common.compare(df[learn, drug], predict(model, newdata=df[learn,]))
 print("Test:")
 common.compare(df[-learn, drug], predict(model, newdata=df[-learn,]))
 
+
+importance(model)
+varImpPlot(model)

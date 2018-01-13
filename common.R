@@ -14,6 +14,8 @@ common.crossval = function(k.folds, data, class.method){
   error.cv <- 0
   for(i in 1:k.folds){
     testIndexes <- which(folds==i,arr.ind=TRUE)
+    print(nrow(shuffled.data[-testIndexes,]))
+    print(nrow(shuffled.data[testIndexes,]))
     if(class.method == 'logisticregression'){
       model <- glm(as.formula(paste(drug, " ~ .")), data=shuffled.data[-testIndexes,], family=binomial)
       pred <- predict(model, newdata=shuffled.data[testIndexes,], type = "response")
@@ -30,7 +32,10 @@ common.crossval = function(k.folds, data, class.method){
       print('Not implemented method.')
     }
     t  <- table(shuffled.data[testIndexes, 13], pred)
+    if(i == 1) table.cv = t
     error.cv <- error.cv + (1-sum(diag(t))/length(shuffled.data[testIndexes, 13]))
+    table.cv <- table.cv + t
   }
+  print(table.cv / k.folds)
   print(paste('Cross-validation', class.method, 'Error:', (error.cv/k.folds)*100, sep = ' '))
 }

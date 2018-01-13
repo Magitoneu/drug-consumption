@@ -18,7 +18,7 @@ df[, drug] = factor(df[, drug])
 
 N <- nrow(df)
 
-learn <- sample(1:N, round(0.67*N))
+learn <- sample(1:N, round(0.9*N))
 nlearn <- length(learn)
 ntest <- N - nlearn
 
