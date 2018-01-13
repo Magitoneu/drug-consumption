@@ -38,7 +38,7 @@ gl1t <- predict(dataM1.AIC, newdata=df[-learn,],type="response")
 gl1predt <- NULL
 gl1predt[gl1t<P] <- 0
 gl1predt[gl1t>=P] <- 1
-gl1predt <- factor(gl1predt, labels=c("CL0","CL1"))
+gl1predt <- factor(gl1predt, labels=c("CL0","CL1"), levels=(0, 1))
 
 print(M1.TEtable <- table(Truth=df[-learn, drug],Pred=gl1predt))
 print(100*(1-sum(diag(M1.TEtable))/ntest)) 
