@@ -4,13 +4,12 @@ library(knncat)
 load('ws.rdata')
 
 
-# args = commandArgs(TRUE)
-# if (NA %in% args[1]) {
-#   stop("NA")
-# }
-# drug = args[1]
+args = commandArgs(TRUE)
+if (NA %in% args[1]) {
+  stop("NA")
+}
+drug = args[1]
 
-drug = 'Cannabis'
 df = data.factor[, c(2:13, grep(drug, colnames(data.factor)))]
 df[, drug] = factor(df[, drug])
 
@@ -26,8 +25,11 @@ test.classes <- df[-learn, drug]
 
 ks <- c(1:sqrt(nrow(learn.inputs)))
 
-myknn <- knncat(df[learn,], df[-learn,], k = ks, xvals = 10, classcol = 13)
-synpred <- predict(myknn, df[learn,], df[-learn,], train.classcol = 13, newdata.classcol = 3)
+myknn <- knncat(df[learn,], df[-learn,], k = ks, xvals = 10, classcol = 13, verbose = 1)
+synpred <- predict(myknn, df[learn,], df[-learn,], train.classcol = 13, newdata.classcol = 13)
 
 tab <- table(synpred, df[-learn, drug])
 1 - sum(tab[row(tab)==col(tab)])/sum(tab)
+tab
+
+common.crossval(10, df,'knn')

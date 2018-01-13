@@ -3,7 +3,6 @@
 library(e1071)
 library(ggplot2)
 source("common.R")
-
 load("ws.rdata")
 
 
@@ -26,3 +25,5 @@ print("Training:")
 common.compare(df[learn, drug], predict(model, newdata=df[learn,]))
 print("Test:")
 common.compare(df[-learn, drug], predict(model, newdata=df[-learn,]))
+
+common.crossval(10, df, 'naivebayes')
