@@ -1,3 +1,4 @@
+#!/usr/bin/Rscript
 library(MASS)
 library(class)
 library(knncat)
