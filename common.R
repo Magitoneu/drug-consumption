@@ -2,6 +2,8 @@
 
 
 common.compare = function(real, pred) {
+    real = factor(real, levels=c("CL0", "CL1", "CL2", "CL3", "CL4", "CL5", "CL6"))
+    pred = factor(pred, levels=c("CL0", "CL1", "CL2", "CL3", "CL4", "CL5", "CL6"))
     t = table(real, pred)
     print(t)
     print(100*(1-sum(diag(t))/length(real))) 
