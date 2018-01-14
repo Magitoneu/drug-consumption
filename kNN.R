@@ -1,15 +1,15 @@
+#!/usr/bin/Rscript
 library(MASS)
 library (class)
 load('ws.rdata')
 
 
-# args = commandArgs(TRUE)
-# if (NA %in% args[1]) {
-#   stop("NA")
-# }
-# drug = args[1]
+args = commandArgs(TRUE)
+if (NA %in% args[1]) {
+  stop("NA")
+}
+drug = args[1]
 
-drug = 'Cannabis'
 df = data.factor[, c(2:13, grep(drug, colnames(data.factor)))]
 df[, drug] = factor(df[, drug])
 
@@ -22,11 +22,6 @@ learn.inputs <- df[learn, 1:12]
 learn.classes <- df[learn, drug]
 test.inputs <- df[-learn, 1:12]
 test.classes <- df[-learn, drug]
-
-myknn <- knn(learn.inputs, test.inputs, learn.classes, k = 3, prob=TRUE)
-
-tab <- table(myknn, test.classes) 
-1 - sum(tab[row(tab)==col(tab)])/sum(tab)
 
 set.seed (23)
 neighbours <- c(1:sqrt(nrow(learn.inputs)))
@@ -44,11 +39,10 @@ for (k in neighbours)
   errors[k, "LOOCV error"] <- 1 - sum(tab[row(tab)==col(tab)])/sum(tab)
 }
 
-errors
 best.k <- which.min(errors[,2])
 
 myknn <- knn (learn.inputs, test.inputs, learn.classes, k = best.k, prob=TRUE) 
 
-tab
 tab <- table(myknn, test.classes) 
 1 - sum(tab[row(tab)==col(tab)])/sum(tab)
+tab

@@ -1,6 +1,6 @@
 #!/usr/bin/Rscript
 library('FactoMineR')
-
+source("common.R")
 load('ws.rdata')
 
 args = commandArgs(TRUE)
@@ -17,7 +17,7 @@ df[, drug] = factor(df[, drug])
 
 N <- nrow(df)
 
-learn <- sample(1:N, round(0.67*N))
+learn <- sample(1:N, round(0.9*N))
 nlearn <- length(learn)
 ntest <- N - nlearn
 
@@ -43,6 +43,7 @@ gl1predt <- factor(gl1predt, labels=c("CL0","CL1"), levels=c(0, 1))
 print(M1.TEtable <- table(Truth=df[-learn, drug],Pred=gl1predt))
 print(100*(1-sum(diag(M1.TEtable))/ntest)) 
 
+common.crossval(10, df, 'logisticregression')
 
 
 

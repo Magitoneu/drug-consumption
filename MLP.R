@@ -18,7 +18,7 @@ df[, drug] = factor(df[, drug])
 
 N <- nrow(df)
 
-learn <- sample(1:N, round(0.67*N))
+learn <- sample(1:N, round(0.9*N))
 nlearn <- length(learn)
 ntest <- N - nlearn
 
@@ -51,13 +51,13 @@ model.10x10CV <- train (as.formula(paste(drug, " ~ .")), data = df, subset=learn
 best.decay <- model.10x10CV$bestTune[1,2]
 
 
-nnet.fit <- nnet(as.formula(paste(drug, " ~ .")), data = df[learn,], size = 40, decay = 0.075, trace = T, maxit = 1000, MaxNWts = 1500)
+nnet.fit <- nnet(as.formula(paste(drug, " ~ .")), data = df[learn,], size = best.size, decay = best.decay, trace = T, maxit = 1000, MaxNWts = 1500)
 
 nnet.predict <- predict(nnet.fit, newdata = df[-learn,], type = 'class')
 b <- nnet.predict == df[-learn, drug]
 summary(b)
 
-tab <- table(nnet.prediction, test.classes) 
+tab <- table(nnet.predict, df[-learn, drug]) 
 1 - sum(tab[row(tab)==col(tab)])/sum(tab)
 
 
