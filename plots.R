@@ -1,5 +1,7 @@
 #!/usr/bin/Rscript
 library(ggplot2)
+source("common.R")
+source("fun-methods.R")
 load("ws.rdata")
 
 plotsdir = "plots-dir"
@@ -28,6 +30,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   }
 }
 # ==================================================================================
+print("DISTRIBUTION ALL CSV")
 # ==================================================================================
 a = lapply( data.factor[,14:31], function(x) rbind(
     CL0 = sum(x == "CL0") ,
@@ -40,6 +43,7 @@ a = lapply( data.factor[,14:31], function(x) rbind(
 ))
 write.csv(data.frame(a), paste(plotsdir, "/all.csv", sep=""))
 # ==================================================================================
+print("DISTRIB FULL")
 # ==================================================================================
 df = data.factor[,14:31]
 pl = lapply(seq_along(df), function(x) {
@@ -50,6 +54,7 @@ png(filename=paste(plotsdir, "/all.png", sep=""), width=210, height=297, units="
 multiplot(plotlist=pl, cols=2)
 dev.off()
 # ==================================================================================
+print("DISTRIB HALF 1")
 # ==================================================================================
 df = data.factor[,14:23]
 pl = lapply(seq_along(df), function(x) {
@@ -60,6 +65,7 @@ png(filename=paste(plotsdir, "/all-sub-00.png", sep=""), width=210, height=250, 
 multiplot(plotlist=pl, cols=2)
 dev.off()
 # ==================================================================================
+print("DISTRIB HALF 2")
 # ==================================================================================
 df = data.factor[,24:31]
 pl = lapply(seq_along(df), function(x) {
@@ -69,4 +75,33 @@ pl = lapply(seq_along(df), function(x) {
 png(filename=paste(plotsdir, "/all-sub-01.png", sep=""), width=210, height=200, units="mm", res=200)
 multiplot(plotlist=pl, cols=2)
 dev.off()
-
+# ==================================================================================
+print("CONFUSIONS")
+# ==================================================================================
+makeConfusions = function(methodName, func=NULL) {
+    drugs = colnames(data.factor[,14:31])
+    pl = list()
+    i = 1
+    for (drug in drugs) {
+        assign("drug", drug, envir = .GlobalEnv)
+        df = data.factor[, c(2:13, grep(drug, colnames(data.factor)))]
+        if (is.null(func)) {
+            invisible(capture.output(table <- common.crossval(10, df, methodName)))
+        } else {
+            invisible(capture.output(table <- func(drug)))
+        }
+        table.df = data.frame(table)
+        p = common.plotConfusion(table, drug)
+        pl[[i]] = p
+        i = i + 1
+    }
+    png(filename=paste(plotsdir, "/confusion-", methodName, ".png", sep=""), width=210, height=297, units="mm", res=200)
+    multiplot(plotlist=pl, cols=3)
+    dev.off()
+}
+print("NAIVE BAYES")
+makeConfusions('naivebayes')
+print("RANDOM FOREST")
+makeConfusions("randomforest", func=funmeth.randomForest)
+print("RANDOM FOREST WEIGHTED")
+makeConfusions("randomforest-weighted", func=funmeth.randomForest.weighted)

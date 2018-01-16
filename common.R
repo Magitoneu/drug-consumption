@@ -1,5 +1,7 @@
-#library(ggplot2)
-
+library(e1071)
+library(FactoMineR)
+library(randomForest)
+library(ggplot2)
 
 common.compare = function(real, pred) {
     real = factor(real, levels=c("CL0", "CL1", "CL2", "CL3", "CL4", "CL5", "CL6"))
@@ -7,7 +9,16 @@ common.compare = function(real, pred) {
     t = table(real, pred)
     print(t)
     print(100*(1-sum(diag(t))/length(real))) 
+    t
 }
+
+
+common.getSubstimateds = function(table) {
+    df = data.frame(table)
+    select = as.numeric(df[,1]) > as.numeric(df[,2])
+    subs = sum(df[select, 3])
+}
+
 
 #knnCAT, nnet,  RandomForest no necesiten la funció ja que la tenen incorporada (nnet té el metode train, RandomForest l'error OBS, knnCAT en la mateixa funció)
 common.crossval = function(k.folds, data, class.method){
@@ -40,4 +51,28 @@ common.crossval = function(k.folds, data, class.method){
   }
   print(table.cv / k.folds)
   print(paste('Cross-validation', class.method, 'Error:', (error.cv/k.folds)*100, sep = ' '))
+  ret = table.cv / k.folds
+}
+
+
+common.plotConfusion = function (table, title, axis=FALSE) {
+    table.df = data.frame(table)
+    total = sum(table)
+    error = (1 - sum(diag(table))/total)
+    colnames(table.df) <- c("Var1", "pred", "Freq")
+    p = ggplot(table.df, aes(pred, Var1)) + 
+        geom_raster(aes(fill = Freq)) + 
+        scale_y_discrete(limits = rev(levels(table.df$Var1))) + 
+        guides(fill=FALSE) +
+        labs(x=NULL, y=NULL, title=paste(title, " - Error: ", round(error*100, 2), "%", sep="")) +
+        scale_fill_gradient(low = "white", high = "red") +
+        geom_text(aes(label = round(Freq/total*100, digits=1)))
+    if (!isTRUE(axis)) {
+        p = p + theme(
+            axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            axis.ticks = element_blank()
+        )
+    }
+    p
 }

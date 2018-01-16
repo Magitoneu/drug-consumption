@@ -21,6 +21,7 @@ learn = sample(1:N, round(2/3*N))
 
 model = naiveBayes(as.formula(paste(drug, " ~ .")), data = df[learn,])
 
+
 print("Training:")
 common.compare(df[learn, drug], predict(model, newdata=df[learn,]))
 print("Test:")
