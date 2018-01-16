@@ -1,6 +1,8 @@
 library(e1071)
 library(FactoMineR)
 #library(randomForest)
+library(nnet)
+library(MASS)
 library(ggplot2)
 
 
@@ -21,7 +23,7 @@ common.getSubstimateds = function(table) {
     subs = sum(df[select, 3])
 }
 
-common.crossval = function(k.folds, data, class.method){
+common.crossval = function(k.folds, data, class.method, best.k = NULL, best.size = NULL, best.decay = NULL){
     shuffled.data <- data[sample(nrow(data)),]
     folds <- cut(seq(1,nrow(shuffled.data)), breaks = k.folds, labels = FALSE)
     error.cv <- 0
