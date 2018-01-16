@@ -1,6 +1,6 @@
 library(e1071)
 library(FactoMineR)
-library(randomForest)
+#library(randomForest)
 library(ggplot2)
 
 
@@ -58,7 +58,7 @@ common.crossval = function(k.folds, data, class.method){
         table.cv <- table.cv + t
     }
     print((error.cv/k.folds)*100)
-    print(table.cv / k.folds)
+    #print(table.cv / k.folds)
     #print(paste('Cross-validation', class.method, 'Error:', (error.cv/k.folds)*100, sep = ' '))
     ret = table.cv / k.folds
     return(ret)
