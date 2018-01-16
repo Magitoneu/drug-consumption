@@ -105,3 +105,8 @@ print("RANDOM FOREST")
 makeConfusions(data.factor, "randomforest", func=funmeth.randomForest)
 print("RANDOM FOREST WEIGHTED")
 makeConfusions(data.factor, "randomforest-weighted", func=funmeth.randomForest.weighted)
+print('Logistic Regresion')
+makeConfusions(data.binary, "logisticRegression", func=funmeth.logisticRegression)
+
+
+

@@ -85,3 +85,12 @@ funmeth.randomForest.comparison = function(data) {
         print(paste("Substimateds weigth:", subs.weighted))
     }
 }
+
+
+funmeth.logisticRegression = function(data, drug){
+    
+    df = data[, c(2:13, grep(drug, colnames(data)))]
+    conf = common.crossval(10, df, 'logisticregression')
+    return(conf)
+}
+
