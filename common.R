@@ -3,6 +3,7 @@ library(FactoMineR)
 #library(randomForest)
 library(nnet)
 library(MASS)
+library(class)
 library(ggplot2)
 
 
@@ -23,7 +24,7 @@ common.getSubstimateds = function(table) {
     subs = sum(df[select, 3])
 }
 
-common.crossval = function(k.folds, data, class.method, best.k = NULL, best.size = NULL, best.decay = NULL){
+common.crossval = function(k.folds, data, class.method, best.k = NULL, best.size = NULL, best.decay = NULL, drug = NULL){
     shuffled.data <- data[sample(nrow(data)),]
     folds <- cut(seq(1,nrow(shuffled.data)), breaks = k.folds, labels = FALSE)
     error.cv <- 0
@@ -47,7 +48,7 @@ common.crossval = function(k.folds, data, class.method, best.k = NULL, best.size
         }
         else if(class.method == 'mlp'){
             model <- nnet(as.formula(paste(drug, " ~ .")), data = shuffled.data[-testIndexes,], size = best.size, decay = best.decay, trace = F, maxit = 1000, MaxNWts = 1500)
-            pred <- predict(nnet.fit, newdata=shuffled.data[testIndexes,], type = 'class')
+            pred <- predict(model, newdata=shuffled.data[testIndexes,], type = 'class')
         }
         else {
             print('Not implemented method.')

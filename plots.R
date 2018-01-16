@@ -86,7 +86,7 @@ makeConfusions = function(data, methodName, func=NULL) {
         if (is.null(func)) {
             assign("drug", drug, envir = .GlobalEnv)
             df = data.factor[, c(2:13, grep(drug, colnames(data)))]
-            invisible(capture.output(table <- common.crossval(10, df, methodName)))
+            invisible(capture.output(table <- common.crossval(10, df, methodName, drug)))
         } else {
             invisible(capture.output(table <- func(data, drug)))
         }

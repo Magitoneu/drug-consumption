@@ -2,6 +2,8 @@ library(e1071)
 library(FactoMineR)
 library(randomForest)
 library(ggplot2)
+library(nnet)
+library(MASS)
 source("common.R")
 
 funmeth.randomForest = function (data, drug) {
@@ -89,7 +91,7 @@ funmeth.randomForest.comparison = function(data) {
 
 funmeth.logisticRegression = function(data, drug){
     df = data[, c(2:13, grep(drug, colnames(data)))]
-    conf = common.crossval(10, df, 'logisticregression')
+    conf = common.crossval(10, df, 'logisticregression', drug = drug)
     return(conf)
 }
 
@@ -123,19 +125,19 @@ funmeth.knn = function(data, drug){
     }
     
     best.k <- which.min(errors[,2])
-    conf = common.crossval(10, df, 'knn', best.k)
+    conf = common.crossval(10, df, 'knn', best.k, drug = drug)
     return(conf)
 }
 
 funmeth.mlp = function(data, drug){
     df = data[, c(2:13, grep(drug, colnames(data)))]
-    conf = common.crossval(10, df, 'mlp', best.size = 2, best.decay = 1)
+    conf = common.crossval(10, df, 'mlp', best.size = 2, best.decay = 1, drug = drug)
     return(conf)
 }
 
 funmeth.naiveBayes = function(data, drug){
     df = data[, c(2:13, grep(drug, colnames(data)))]
-    conf = common.crossval(10, df, 'naivebayes')
+    conf = common.crossval(10, df, 'naivebayes', drug = drug)
     return(conf)
 }
 
