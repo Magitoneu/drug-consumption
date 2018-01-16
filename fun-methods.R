@@ -4,9 +4,8 @@ library(randomForest)
 library(ggplot2)
 source("common.R")
 
-funmeth.randomForest = function (drug) {
-    load("ws.rdata")
-    df = data.factor[, c(2:13, grep(drug, colnames(data.factor)))]
+funmeth.randomForest = function (data, drug) {
+    df = data[, c(2:13, grep(drug, colnames(data)))]
     N = nrow(df)
     learn = sample(1:N, round(0.9*N))
     #(ntrees = round(10^seq(1,3,by=0.2)))
@@ -34,9 +33,9 @@ funmeth.randomForest = function (drug) {
     #model = randomForest(as.formula(paste(drug, " ~ .")), data = df[learn,], ntree=ntrees.best, proximity=FALSE)
     model = randomForest(as.formula(paste(drug, " ~ .")), data = df[learn,], ntree=150, proximity=FALSE)
     print("Training:")
-    common.compare(df[learn, drug], predict(model, newdata=df[learn,]))
+    common.getConfusion(df[learn, drug], predict(model, newdata=df[learn,]))
     print("Test:")
-    conf = common.compare(df[-learn, drug], predict(model, newdata=df[-learn,]))
+    conf = common.getConfusion(df[-learn, drug], predict(model, newdata=df[-learn,]))
 
     print(importance(model))
     print(varImpPlot(model))
@@ -44,9 +43,8 @@ funmeth.randomForest = function (drug) {
     return(as.table(conf))
 }
 
-funmeth.randomForest.weighted = function (drug) {
-    load("ws.rdata")
-    df = data.factor[, c(2:13, grep(drug, colnames(data.factor)))]
+funmeth.randomForest.weighted = function (data, drug) {
+    df = data[, c(2:13, grep(drug, colnames(data)))]
     N = nrow(df)
     learn = sample(1:N, round(0.9*N))
     n0 = nrow(df[intersect(learn, which(df[,drug] == "CL0")),])
@@ -67,9 +65,9 @@ funmeth.randomForest.weighted = function (drug) {
     dr = rbind(d0, d1, d2, d3, d4, d5, d6)
     model = randomForest(as.formula(paste(drug, " ~ .")), data = dr, ntree=150, proximity=FALSE, sampsize=c(CL0=nm, CL1=nm, CL2=nm, CL3=nm, CL4=nm, CL5=nm, CL6=nm), strata=dr[,drug])
     print("Training:")
-    common.compare(df[learn, drug], predict(model, newdata=df[learn,]))
+    common.getConfusion(df[learn, drug], predict(model, newdata=df[learn,]))
     print("Test:")
-    conf = common.compare(df[-learn, drug], predict(model, newdata=df[-learn,]))
+    conf = common.getConfusion(df[-learn, drug], predict(model, newdata=df[-learn,]))
 
     print(importance(model))
     print(varImpPlot(model))
@@ -77,12 +75,12 @@ funmeth.randomForest.weighted = function (drug) {
     return(conf)
 }
 
-funmeth.randomForest.comparison = function() {
+funmeth.randomForest.comparison = function(data) {
     load("ws.rdata")
-    drugs = colnames(data.factor[,14:31])
+    drugs = colnames(data[,14:31])
     for (drug in drugs) {
-        invisible(capture.output(conf.normal <- funmeth.randomForest(drug)))
-        invisible(capture.output(conf.weighted <- funmeth.randomForest.weighted(drug)))
+        invisible(capture.output(conf.normal <- funmeth.randomForest(data, drug)))
+        invisible(capture.output(conf.weighted <- funmeth.randomForest.weighted(data, drug)))
         subs.normal = common.getSubstimateds(conf.normal) / sum(conf.normal)
         subs.weighted = common.getSubstimateds(conf.weighted)/sum(conf.weighted)
 

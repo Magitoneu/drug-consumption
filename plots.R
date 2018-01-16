@@ -78,17 +78,17 @@ dev.off()
 # ==================================================================================
 print("CONFUSIONS")
 # ==================================================================================
-makeConfusions = function(methodName, func=NULL) {
-    drugs = colnames(data.factor[,14:31])
+makeConfusions = function(data, methodName, func=NULL) {
+    drugs = colnames(data[,14:31])
     pl = list()
     i = 1
     for (drug in drugs) {
-        assign("drug", drug, envir = .GlobalEnv)
-        df = data.factor[, c(2:13, grep(drug, colnames(data.factor)))]
         if (is.null(func)) {
+            assign("drug", drug, envir = .GlobalEnv)
+            df = data.factor[, c(2:13, grep(drug, colnames(data)))]
             invisible(capture.output(table <- common.crossval(10, df, methodName)))
         } else {
-            invisible(capture.output(table <- func(drug)))
+            invisible(capture.output(table <- func(data, drug)))
         }
         table.df = data.frame(table)
         p = common.plotConfusion(table, drug)
@@ -100,8 +100,8 @@ makeConfusions = function(methodName, func=NULL) {
     dev.off()
 }
 print("NAIVE BAYES")
-makeConfusions('naivebayes')
+makeConfusions(data.factor, 'naivebayes')
 print("RANDOM FOREST")
-makeConfusions("randomforest", func=funmeth.randomForest)
+makeConfusions(data.factor, "randomforest", func=funmeth.randomForest)
 print("RANDOM FOREST WEIGHTED")
-makeConfusions("randomforest-weighted", func=funmeth.randomForest.weighted)
+makeConfusions(data.factor, "randomforest-weighted", func=funmeth.randomForest.weighted)

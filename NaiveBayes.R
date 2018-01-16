@@ -23,8 +23,8 @@ model = naiveBayes(as.formula(paste(drug, " ~ .")), data = df[learn,])
 
 
 print("Training:")
-common.compare(df[learn, drug], predict(model, newdata=df[learn,]))
+common.getConfusion(df[learn, drug], predict(model, newdata=df[learn,]))
 print("Test:")
-common.compare(df[-learn, drug], predict(model, newdata=df[-learn,]))
+common.getConfusion(df[-learn, drug], predict(model, newdata=df[-learn,]))
 
 common.crossval(10, df, 'naivebayes')

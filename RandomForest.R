@@ -4,11 +4,12 @@ library(randomForest)
 
 source("common.R")
 source("fun-methods.R")
+load("ws.rdata")
 
 args = commandArgs(TRUE)
 if (NA %in% args[1]) {
     stop("NA")
 }
 drug = args[1]
-funmeth.randomForest(drug)
+funmeth.randomForest(data.factor, drug)
 

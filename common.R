@@ -3,9 +3,11 @@ library(FactoMineR)
 library(randomForest)
 library(ggplot2)
 
-common.compare = function(real, pred) {
-    real = factor(real, levels=c("CL0", "CL1", "CL2", "CL3", "CL4", "CL5", "CL6"))
-    pred = factor(pred, levels=c("CL0", "CL1", "CL2", "CL3", "CL4", "CL5", "CL6"))
+
+common.getConfusion = function(real, pred) {
+    lvls = union(levels(real), levels(pred))
+    real = factor(real, levels=lvls)
+    pred = factor(pred, levels=lvls)
     t = table(real, pred)
     print(t)
     print(100*(1-sum(diag(t))/length(real))) 
@@ -32,6 +34,7 @@ common.crossval = function(k.folds, data, class.method){
     if(class.method == 'logisticregression'){
       model <- glm(as.formula(paste(drug, " ~ .")), data=shuffled.data[-testIndexes,], family=binomial)
       pred <- predict(model, newdata=shuffled.data[testIndexes,], type = "response")
+
       gl1predt <- NULL
       gl1predt[pred<0.5] <- 0
       gl1predt[pred>=0.5] <- 1
