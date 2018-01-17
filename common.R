@@ -74,14 +74,15 @@ common.crossval = function(k.folds, data, class.method, best.k = NULL, best.size
 common.plotConfusion = function (table, title, axis=FALSE) {
     table.df = data.frame(table)
     total = sum(table)
+    subs = common.getSubstimateds(table)/total
     error = (1 - sum(diag(table))/total)
     colnames(table.df) <- c("Var1", "pred", "Freq")
     p = ggplot(table.df, aes(pred, Var1)) + 
         geom_raster(aes(fill = Freq)) + 
         scale_y_discrete(limits = rev(levels(table.df$Var1))) + 
         guides(fill=FALSE) +
-        labs(x=NULL, y=NULL, title=paste(title, " - Error: ", round(error*100, 2), "%", sep="")) +
-        scale_fill_gradient(low = "white", high = "red") +
+        labs(x=NULL, y=NULL, title=title, subtitle=paste("Error: ", round(error*100, 2), "%   Subs: ", round(subs*100, 2), "%", sep="")) +
+        scale_fill_gradient(low = "white", high = "red", limits=c(0, total)) +
         geom_text(aes(label = round(Freq/total*100, digits=1)))
     if (!isTRUE(axis)) {
         p = p + theme(
