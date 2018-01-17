@@ -169,7 +169,7 @@ makeComparisons = function(datas, methodNames, funcs, filename) {
     p.subs = ggplot(data = df.melted, aes(x = drug, y = value, color = variable, group = variable)) +
         geom_line() + geom_point() +
         theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-        labs(x = "Drug", y = "Subestimateds")
+        labs(x = "Drug", y = "Substimateds")
     pl = list(p.error, p.subs)
 
     mylegend = g_legend(p.error)
