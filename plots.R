@@ -1,5 +1,7 @@
 #!/usr/bin/Rscript
 library(ggplot2)
+library(reshape)
+library(gridExtra)
 source("common.R")
 source("fun-methods.R")
 load("ws.rdata")
@@ -91,7 +93,7 @@ makeConfusions = function(data, methodName, func=NULL, cols=3, width=210, height
             invisible(capture.output(table <- func(data, drug)))
         }
         table.df = data.frame(table)
-        p = common.plotConfusion(table, drug)
+        p = common.plotConfusion(table, drug, axis=TRUE)
         pl[[i]] = p
         i = i + 1
     }
@@ -99,6 +101,8 @@ makeConfusions = function(data, methodName, func=NULL, cols=3, width=210, height
     multiplot(plotlist=pl, cols=cols)
     dev.off()
 }
+
+
 print("NAIVE BAYES")
 makeConfusions(data.factor, 'naivebayes', fun=funmeth.naiveBayes)
 print("RANDOM FOREST")
@@ -123,4 +127,67 @@ print("RANDOM FOREST BINARY")
 makeConfusions(data.binary, "randomForestBinary-xs", func=funmeth.randomForest, cols=4, width=210, height=148.5)
 print("RANDOM FOREST BINARY WEIGHTED")
 makeConfusions(data.binary, "randomForestBinaryWeighted-xs", func=funmeth.randomForest.weighted, cols=4, width=210, height=148.5)
+
+#https://github.com/hadley/ggplot2/wiki/Share-a-legend-between-two-ggplot2-graphs
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
+
+makeComparisons = function(datas, methodNames, funcs, filename) {
+    drugs = colnames(datas[[1]][,14:31])
+    df.error = data.frame(data.frame(matrix(nrow=length(drugs), ncol=length(funcs) + 1)))
+    df.subs = data.frame(data.frame(matrix(nrow=length(drugs), ncol=length(funcs) + 1)))
+    colnames(df.error) = c("drug", methodNames)
+    colnames(df.subs) = c("drug", methodNames)
+    df.error[,1] = drugs
+    df.subs[,1] = drugs
+    i = 1
+    for (drug in drugs) {
+        j = 2
+        errors = c()
+        subs = c()
+        for (func in funcs) {
+            print(paste(i, j))
+            invisible(capture.output(table <- func(datas[[j-1]], drug)))
+            total = sum(table)
+            error = 1 - (sum(diag(table)) / total)
+            subs = common.getSubstimateds(table) / total
+            df.error[i,j] = error
+            df.subs[i,j] = subs
+            j = j + 1
+        }
+        i = i + 1
+    }
+    df.melted <- melt(df.error, id = "drug")
+    p.error = ggplot(data = df.melted, aes(x = drug, y = value, color = variable, group = variable)) +
+        geom_line() + geom_point() +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position="bottom", legend.title=element_blank()) + 
+        labs(x = "Drug", y = "Error")
+    df.melted <- melt(df.subs, id = "drug")
+    p.subs = ggplot(data = df.melted, aes(x = drug, y = value, color = variable, group = variable)) +
+        geom_line() + geom_point() +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        labs(x = "Drug", y = "Subestimateds")
+    pl = list(p.error, p.subs)
+
+    mylegend = g_legend(p.error)
+    png(filename=paste(plotsdir, "/", filename, ".png", sep=""), width=210, height=148.5, units="mm", res=200)
+    p = grid.arrange(arrangeGrob(p.error + theme(legend.position="none"),
+                         p.subs + theme(legend.position="none"),
+                         nrow=1),
+             mylegend, nrow=2,heights=c(10, 1))
+    dev.off()
+}
+
+datas = list(data.factor, data.factor, data.factor, data.factor.normalized, data.factor)
+methodNames = c("naivebayes", "randomforest","randomforestweighted", "knn", "mlp")
+funcs = c(funmeth.naiveBayes, funmeth.randomForest, funmeth.randomForest.weighted, funmeth.knn, funmeth.mlp)
+makeComparisons(datas, methodNames, funcs, "all-classes")
+
+datas = list(data.binary, data.binary, data.binary)
+methodNames = c("logisticregression", "randomforest","randomforestweighted")
+funcs = c(funmeth.logisticRegression, funmeth.randomForest, funmeth.randomForest.weighted)
+makeComparisons(datas, methodNames, funcs, "bin-classes")
 
