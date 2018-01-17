@@ -1,11 +1,11 @@
-library(e1071)
-library(FactoMineR)
-library(randomForest)
-library(nnet)
-library(MASS)
-library(class)
-library(ggplot2)
-
+suppressMessages(library(e1071))
+suppressMessages(library(FactoMineR))
+suppressMessages(library(randomForest))
+suppressMessages(library(nnet))
+suppressMessages(library(MASS))
+suppressMessages(library(class))
+suppressMessages(library(caret))
+suppressMessages(library(ggplot2))
 
 common.getConfusion = function(real, pred) {
     lvls = union(levels(real), levels(pred))
@@ -17,11 +17,11 @@ common.getConfusion = function(real, pred) {
     t
 }
 
-
 common.getSubstimateds = function(table) {
     df = data.frame(table)
     select = as.numeric(df[,1]) > as.numeric(df[,2])
     subs = sum(df[select, 3])
+    return(subs)
 }
 
 common.crossval = function(k.folds, data, class.method, best.k = NULL, best.size = NULL, best.decay = NULL, drug = NULL){
@@ -63,13 +63,12 @@ common.crossval = function(k.folds, data, class.method, best.k = NULL, best.size
         error.cv <- error.cv + (1-sum(diag(t))/length(shuffled.data[testIndexes, 13]))
         table.cv <- table.cv + t
     }
-    print((error.cv/k.folds)*100)
+    #print((error.cv/k.folds)*100)
     #print(table.cv / k.folds)
-    #print(paste('Cross-validation', class.method, 'Error:', (error.cv/k.folds)*100, sep = ' '))
+    print(paste('Cross-validation', class.method, 'Error:', (error.cv/k.folds)*100, sep = ' '))
     ret = table.cv / k.folds
     return(ret)
 }
-
 
 common.plotConfusion = function (table, title, axis=FALSE) {
     table.df = data.frame(table)
