@@ -7,6 +7,5 @@ args = commandArgs(TRUE)
 if (NA %in% args[1]) {
     stop("NA")
 }
-
 drug = args[1]
-funmeth.logisticRegression(data.binary, drug)
+funmeth.randomForest.weighted(data.binary, drug)

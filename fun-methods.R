@@ -1,9 +1,3 @@
-library(e1071)
-library(FactoMineR)
-library(randomForest)
-library(ggplot2)
-library(nnet)
-library(MASS)
 source("common.R")
 
 funmeth.randomForest = function (data, drug) {
@@ -130,7 +124,35 @@ funmeth.knn = function(data, drug){
 }
 
 funmeth.mlp = function(data, drug){
-    df = data[, c(2:13, grep(drug, colnames(data)))]
+    df = data.factor[, c(2:13, grep(drug, colnames(data.factor)))]
+    df[, drug] = factor(df[, drug])
+    
+    N <- nrow(df)
+    learn <- sample(1:N, round(0.9*N))
+    nlearn <- length(learn)
+    ntest <- N - nlearn
+    
+    trc <- trainControl (method="repeatedcv", number=5, repeats=5)
+    sizes <- seq(1,40,by=2)+1
+    
+    print('Start with 5x5CV looking for best size')
+    model.10x10CV <- train (as.formula(paste(drug, " ~ .")), data = df, subset=learn, method='nnet', maxit = 800, trace = F,
+                            tuneGrid = expand.grid(.size=sizes,.decay=0), trControl=trc, MaxNWts = 1500)
+    best.size <- model.10x10CV$bestTune[1,1]
+    
+    p2 <- as.factor(predict (model.10x10CV, newdata=df[-learn,], type="raw"))
+    t2 <- table(pred=p2,truth=df[-learn, drug])
+    error_rate.test <- 100*(1-sum(diag(t2))/ntest)
+    error_rate.test
+    
+    decays <- 10^seq(-3,0,by=0.05)
+    
+    print('Start with 5x5CV looking for best decay')
+    model.10x10CV <- train (as.formula(paste(drug, " ~ .")), data = df, subset=learn, method='nnet', maxit = 800, trace = F,
+                            tuneGrid = expand.grid(.size=best.size,.decay=decays), trControl=trc, MaxNWts = 1500)
+    
+    best.decay <- model.10x10CV$bestTune[1,2]
+
     conf = common.crossval(10, df, 'mlp', best.size = 2, best.decay = 1, drug = drug)
     return(conf)
 }

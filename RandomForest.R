@@ -1,8 +1,5 @@
 #!/usr/bin/Rscript
 
-library(randomForest)
-
-source("common.R")
 source("fun-methods.R")
 load("ws.rdata")
 
