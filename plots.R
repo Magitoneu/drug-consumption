@@ -109,12 +109,10 @@ print("RANDOM FOREST BINARY")
 makeConfusions(data.binary, "randomForestBinary", func=funmeth.randomForest)
 print("RANDOM FOREST BINARY WEIGHTED")
 makeConfusions(data.binary, "randomForestBinaryWeighted", func=funmeth.randomForest.weighted)
-
 print("KNN")
 makeConfusions(data.factor.normalized, "knn", func=funmeth.knn)
 print("MLP")
 makeConfusions(data.factor, "mlp", func=funmeth.mlp)
-
 print("Logistic Regression")
 makeConfusions(data.binary, "logisticRegression", func=funmeth.logisticRegression)
 

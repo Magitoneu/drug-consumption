@@ -53,8 +53,11 @@ common.crossval = function(k.folds, data, class.method, best.k = NULL, best.size
         else {
             print('Not implemented method.')
         }
-        real = factor(shuffled.data[testIndexes, 13], levels=c("CL0", "CL1", "CL2", "CL3", "CL4", "CL5", "CL6"))
-        pred = factor(pred, levels=c("CL0", "CL1", "CL2", "CL3", "CL4", "CL5", "CL6"))
+        real = shuffled.data[testIndexes, 13]
+        lvls = union(levels(real), levels(pred))
+        real = factor(real, levels=lvls)
+        pred = factor(pred, levels=lvls)
+
         t  <- table(real, pred)
         if(i == 1) table.cv = t
         error.cv <- error.cv + (1-sum(diag(t))/length(shuffled.data[testIndexes, 13]))
