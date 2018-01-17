@@ -100,7 +100,7 @@ makeConfusions = function(data, methodName, func=NULL) {
     dev.off()
 }
 print("NAIVE BAYES")
-makeConfusions(data.factor, 'naivebayes')
+makeConfusions(data.factor, 'naivebayes', fun=funmeth.naiveBayes)
 print("RANDOM FOREST")
 makeConfusions(data.factor, "randomforest", func=funmeth.randomForest)
 print("RANDOM FOREST WEIGHTED")

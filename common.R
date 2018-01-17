@@ -1,6 +1,6 @@
 library(e1071)
 library(FactoMineR)
-#library(randomForest)
+library(randomForest)
 library(nnet)
 library(MASS)
 library(class)
