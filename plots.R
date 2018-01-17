@@ -78,7 +78,7 @@ dev.off()
 # ==================================================================================
 print("CONFUSIONS")
 # ==================================================================================
-makeConfusions = function(data, methodName, func=NULL) {
+makeConfusions = function(data, methodName, func=NULL, cols=3, width=210, height=297) {
     drugs = colnames(data[,14:31])
     pl = list()
     i = 1
@@ -95,8 +95,8 @@ makeConfusions = function(data, methodName, func=NULL) {
         pl[[i]] = p
         i = i + 1
     }
-    png(filename=paste(plotsdir, "/confusion-", methodName, ".png", sep=""), width=210, height=297, units="mm", res=200)
-    multiplot(plotlist=pl, cols=3)
+    png(filename=paste(plotsdir, "/confusion-", methodName, ".png", sep=""), width=width, height=height, units="mm", res=200)
+    multiplot(plotlist=pl, cols=cols)
     dev.off()
 }
 print("NAIVE BAYES")
@@ -115,4 +115,12 @@ print("MLP")
 makeConfusions(data.factor, "mlp", func=funmeth.mlp)
 print("Logistic Regression")
 makeConfusions(data.binary, "logisticRegression", func=funmeth.logisticRegression)
+
+print("SMALLS")
+print("Logistic Regression")
+makeConfusions(data.binary, "logisticRegression-xs", func=funmeth.logisticRegression, cols=4, width=210, height=148.5)
+print("RANDOM FOREST BINARY")
+makeConfusions(data.binary, "randomForestBinary-xs", func=funmeth.randomForest, cols=4, width=210, height=148.5)
+print("RANDOM FOREST BINARY WEIGHTED")
+makeConfusions(data.binary, "randomForestBinaryWeighted-xs", func=funmeth.randomForest.weighted, cols=4, width=210, height=148.5)
 
