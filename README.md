@@ -61,9 +61,10 @@ This will show the prediciton error and the confusion matrix at the end of the e
 								
 
 Other scripts:
-		- plots.R, it creates all the plots of the final document. 
-		- fun-methods.R, where all the methods are implemented.
-		- common.R, util functions. 
+
+		plots.R, it creates all the plots of the final document. 
+		fun-methods.R, where all the methods are implemented.
+		common.R, util functions. 
 
 In order to load all the data:
     
